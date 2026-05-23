@@ -1,17 +1,17 @@
 /*
 ==========================================================================
-Cytoscape 地圖渲染與時間軸動態連動引擎
+Cytoscape 地圖渲染與時間軸動態連動引擎 (RWD 響應式優化版)
 ==========================================================================
 */
 
-// ✨ 全局狀態：記錄是否為亮色模式、以及目前選中的路徑
 let isLightMode = false;
 let currentActivePath = null;
 
 const cy = cytoscape({
     container: document.getElementById("cy"),
-    userZoomingEnabled: false,
-    userPanningEnabled: false,
+    userZoomingEnabled: true,  /* ✨ 開啟使用者縮放，方便手機用戶雙指放大 */
+    userPanningEnabled: true,  /* ✨ 開啟使用者平移，方便手機用戶滑動地圖 */
+    wheelSensitivity: 0.2,     /* 降低滑鼠滾輪縮放的靈敏度 */
     autoungrabify: true,
     style: [
         {
@@ -78,18 +78,28 @@ function loadGraphToCanvas() {
             });
         });
     });
-    cy.layout({ name: 'circle', radius: 260 }).run();
+    
+    // ✨ 響應式優化：根據當前螢幕寬度決定初始半徑 ✨
+    let mapRadius = window.innerWidth < 768 ? 160 : 260;
+    cy.layout({ name: 'circle', radius: mapRadius }).run();
+    
+    // ✨ 讓地圖自動縮放以完美填滿容器 (Padding 30px) ✨
+    cy.fit(cy.elements(), 30);
 }
 
 loadGraphToCanvas();
 
-// ✨ 明暗模式切換監聽器 ✨
+// ✨ 監聽瀏覽器視窗大小變化，確保地圖隨時保持居中與自適應大小 ✨
+window.addEventListener('resize', () => {
+    cy.fit(cy.elements(), 30);
+});
+
+// 明暗模式切換監聽器
 document.getElementById("themeToggle").addEventListener("click", () => {
     isLightMode = !isLightMode;
     document.body.classList.toggle('light-theme', isLightMode);
     document.getElementById("themeToggle").innerHTML = isLightMode ? '🌙 暗色模式' : '🌞 亮色模式';
     
-    // 動態更新地圖樣式
     updateMapTheme();
 });
 
@@ -116,12 +126,10 @@ function updateMapTheme() {
       })
       .update();
 
-    // 如果目前畫面上已經有計算好的路徑，重新補上高亮
     if (currentActivePath) {
         highlightPathOnMap(currentActivePath);
     }
 }
-
 
 // 「開始規劃最佳路線」按鈕監聽器
 document.getElementById("btnOptimize").addEventListener("click", () => {
@@ -172,19 +180,11 @@ function renderDataAndTimeline(dfs, greedy) {
         document.getElementById("compGreedyCost").innerText = "-";
         document.getElementById("compGreedyScore").innerText = "-";
     }
-
-    const recZone = document.getElementById("recommendationText");
-    if (recZone) {
-        recZone.innerHTML = "";
-        const parentCard = recZone.closest('.card, .section, div[class*="card"]'); 
-        if (parentCard) parentCard.style.display = 'none'; 
-        else if (recZone.parentElement) recZone.parentElement.style.display = 'none';
-    }
 }
 
-// 在 Cytoscape 地圖上高亮繪製最佳路線 (支援明暗雙色調)
+// 在 Cytoscape 地圖上高亮繪製最佳路線
 function highlightPathOnMap(path) {
-    currentActivePath = path; // ✨ 記錄目前的路線
+    currentActivePath = path; 
 
     const baseNodeBg = isLightMode ? '#ffffff' : '#1e293b';
     const baseBorder = isLightMode ? '#cbd5e1' : '#475569';

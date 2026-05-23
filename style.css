@@ -2,23 +2,21 @@
    1. 全局視覺變數與基本重設 (Reset & Variables)
    ========================================================================== */
 :root {
-    /* 🌙 深色模式預設變數 */
     --bg-main: #0f172a;       
     --card-bg: #1e293b;       
     --text-main: #f8fafc;     
     --text-muted: #94a3b8;    
     --primary: #38bdf8;       
     --primary-hover: #0ea5e9; 
-    --accent-dfs: #10b981;     
-    --accent-greedy: #f59e0b;  
     --border-color: #334155;  
     --route-highlight: #ef4444; 
     --map-bg: #0b0f19;
     --table-header: #0f172a;
     --timeline-bg: rgba(15, 23, 42, 0.4);
+    --accent-dfs: #10b981;     
+    --accent-greedy: #f59e0b;  
 }
 
-/* 🌞 亮色模式切換變數 */
 body.light-theme {
     --bg-main: #f8fafc;       
     --card-bg: #ffffff;       
@@ -63,6 +61,11 @@ body {
     border: 1px solid var(--border-color);
     margin-bottom: 24px;
     transition: all 0.3s ease;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    flex-wrap: wrap; /* 允許元素在空間不足時換行 */
+    gap: 16px;
 }
 
 .logo-zone {
@@ -89,7 +92,6 @@ body {
     letter-spacing: 0.5px;
 }
 
-/* ✨ 主題切換按鈕樣式 ✨ */
 .theme-btn {
     background-color: var(--bg-main);
     color: var(--text-main);
@@ -100,6 +102,7 @@ body {
     font-weight: 600;
     font-size: 0.9rem;
     transition: all 0.2s;
+    white-space: nowrap;
 }
 
 .theme-btn:hover {
@@ -116,14 +119,8 @@ body {
     gap: 24px;
 }
 
-@media (max-width: 1124px) {
-    .main-layout {
-        grid-template-columns: 1fr;
-    }
-}
-
 /* ==========================================================================
-   4. 通用區塊卡片與輸入控制項 (Card & Input Controls)
+   4. 通用區塊卡片與輸入控制項
    ========================================================================== */
 .card {
     background-color: var(--card-bg);
@@ -172,6 +169,7 @@ input[type="number"], .custom-select {
     color: var(--text-main);
     font-size: 1rem;
     transition: all 0.3s ease;
+    width: 100%;
 }
 
 input[type="number"]:focus, .custom-select:focus {
@@ -191,14 +189,9 @@ input[type="number"]:focus, .custom-select:focus {
     background-size: 18px;
 }
 
-.custom-select:hover {
-    border-color: var(--primary);
-}
-
 .custom-select option {
     background-color: var(--card-bg);
     color: var(--text-main);
-    padding: 10px;
 }
 
 .primary-btn {
@@ -221,8 +214,14 @@ input[type="number"]:focus, .custom-select:focus {
 }
 
 /* ==========================================================================
-   5. 園區網絡地圖畫布區
+   5. 表格與地圖
    ========================================================================== */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* 手機端滑動更順暢 */
+}
+
 #cy {
     width: 100%;
     height: 680px; 
@@ -295,4 +294,37 @@ input[type="number"]:focus, .custom-select:focus {
     margin: 0;
     font-size: 0.8rem;
     color: var(--text-muted);
+}
+
+/* ==========================================================================
+   ✨ 7. RWD 響應式佈局 (Media Queries) ✨
+   ========================================================================== */
+
+/* 平板尺寸 (Tablet) */
+@media (max-width: 1124px) {
+    .main-layout {
+        grid-template-columns: 1fr; /* 將左右雙欄改成單欄上下堆疊 */
+    }
+    #cy {
+        height: 550px; /* 平板上地圖稍微縮小 */
+    }
+}
+
+/* 手機尺寸 (Mobile) */
+@media (max-width: 768px) {
+    .app-container {
+        padding: 16px;
+    }
+    .logo-zone h1 {
+        font-size: 1.25rem; /* 縮小手機版標題 */
+    }
+    .inputs-grid {
+        grid-template-columns: 1fr; /* 輸入框改為單行排列，避免太擠 */
+    }
+    #cy {
+        height: 450px; /* 手機版地圖高度縮小，方便使用者滑動網頁 */
+    }
+    .card {
+        padding: 16px; /* 縮小卡片內距，爭取更多螢幕空間 */
+    }
 }
