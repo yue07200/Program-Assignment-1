@@ -64,7 +64,6 @@ body {
     display: flex; 
     justify-content: space-between; 
     align-items: center;
-    flex-wrap: wrap; /* 允許元素在空間不足時換行 */
     gap: 16px;
 }
 
@@ -83,6 +82,21 @@ body {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--primary);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* ✨ 獨立抽出的徽章標籤樣式 ✨ */
+.version-badge {
+    font-size: 12px; 
+    padding: 2px 8px; 
+    border-radius: 6px; 
+    font-weight: bold; 
+    background-color: var(--primary); 
+    color: #fff;
+    white-space: nowrap;
 }
 
 .subtitle {
@@ -219,7 +233,7 @@ input[type="number"]:focus, .custom-select:focus {
 .table-responsive {
     width: 100%;
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch; /* 手機端滑動更順暢 */
+    -webkit-overflow-scrolling: touch; 
 }
 
 #cy {
@@ -297,16 +311,16 @@ input[type="number"]:focus, .custom-select:focus {
 }
 
 /* ==========================================================================
-   ✨ 7. RWD 響應式佈局 (Media Queries) ✨
+   ✨ 7. RWD 響應式佈局 (Media Queries) - 針對手機版完美優化 ✨
    ========================================================================== */
 
 /* 平板尺寸 (Tablet) */
 @media (max-width: 1124px) {
     .main-layout {
-        grid-template-columns: 1fr; /* 將左右雙欄改成單欄上下堆疊 */
+        grid-template-columns: 1fr;
     }
     #cy {
-        height: 550px; /* 平板上地圖稍微縮小 */
+        height: 550px; 
     }
 }
 
@@ -315,16 +329,42 @@ input[type="number"]:focus, .custom-select:focus {
     .app-container {
         padding: 16px;
     }
-    .logo-zone h1 {
-        font-size: 1.25rem; /* 縮小手機版標題 */
+    
+    /* ✨ 修復頂部 Header 擁擠問題 ✨ */
+    .app-header {
+        flex-direction: column;
+        align-items: stretch; /* 讓內部元素可以自動撐滿寬度 */
+        padding: 16px;
+        gap: 16px;
     }
+    .logo-zone {
+        align-items: flex-start; /* 讓旋轉木馬圖示對齊上方 */
+    }
+    .logo-zone .icon {
+        font-size: 2rem;
+        margin-top: 4px; /* 微調圖示高度對齊標題 */
+    }
+    .logo-zone h1 {
+        font-size: 1.15rem;
+        flex-direction: column; /* 讓標題和藍色小標籤強制上下分行 */
+        align-items: flex-start;
+        line-height: 1.4;
+        gap: 6px;
+    }
+    .theme-btn {
+        width: 100%; /* 手機版按鈕滿寬度，更好按 */
+        text-align: center;
+        padding: 12px;
+    }
+
+    /* 其他手機版優化 */
     .inputs-grid {
-        grid-template-columns: 1fr; /* 輸入框改為單行排列，避免太擠 */
+        grid-template-columns: 1fr; 
     }
     #cy {
-        height: 450px; /* 手機版地圖高度縮小，方便使用者滑動網頁 */
+        height: 450px; 
     }
     .card {
-        padding: 16px; /* 縮小卡片內距，爭取更多螢幕空間 */
+        padding: 16px; 
     }
 }
