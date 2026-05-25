@@ -77,7 +77,7 @@ function findGreedyRoute(startNode, timeLimit, moneyLimit, userAge) {
 
             // 計算 CP 值：人氣分數 / (走路時間 + 遊玩時間 + 排隊時間 + 成本)
             // CP 值越高代表「花費的時間和金錢越少，但獲得的人氣分數越多」，是更划算的選擇
-            let totalEffort = edge.travelTime + nextVertex.playTime + nextVertex.queueTime + nextVertex.cost;
+            let totalEffort = edge.travelTime + nextVertex.playTime + nextVertex.queueTime + edge.travelCost + nextVertex.cost;
             let cpValue = nextVertex.popularity / (totalEffort + 1);
             
             if (cpValue > maxCPValue) {
