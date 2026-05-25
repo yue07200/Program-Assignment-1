@@ -9,8 +9,8 @@ let currentActivePath = null;
 
 const cy = cytoscape({
     container: document.getElementById("cy"),
-    userZoomingEnabled: true,  /* 開啟使用者縮放，方便手機用戶雙指放大 */
-    userPanningEnabled: true,  /* 開啟使用者平移，方便手機用戶滑動地圖 */
+    userZoomingEnabled: true,  /* ✨ 開啟使用者縮放，方便手機用戶雙指放大 */
+    userPanningEnabled: true,  /* ✨ 開啟使用者平移，方便手機用戶滑動地圖 */
     wheelSensitivity: 0.2,     /* 降低滑鼠滾輪縮放的靈敏度 */
     autoungrabify: true,
     style: [
@@ -64,7 +64,7 @@ function loadGraphToCanvas() {
         cy.add({
             group: 'nodes',
             data: { 
-                id: id.toString(), 
+                id: id, 
                 label: `【${id}. ${v.name}】\n(${totalTime}分 | 限${v.ageLimit}+)\n💵門票: $${v.cost}\n⭐熱度: ${v.popularity}` 
             }
         });
@@ -74,27 +74,22 @@ function loadGraphToCanvas() {
         graph[fromNode].forEach(edge => {
             cy.add({
                 group: 'edges',
-                data: { 
-                id: `e_${fromNode}_${edge.to}`, 
-                source: fromNode.toString(), 
-                target: edge.to.toString(), 
-                label: `${edge.travelTime}分 / $${edge.travelCost}` 
-            }
+                data: { id: `e_${fromNode}_${edge.to}`, source: fromNode, target: edge.to, label: `${edge.travelTime}分 / $${edge.travelCost}` }
             });
         });
     });
     
-    // 響應式優化：根據當前螢幕寬度決定初始半徑
+    // ✨ 響應式優化：根據當前螢幕寬度決定初始半徑 ✨
     let mapRadius = window.innerWidth < 768 ? 160 : 260;
     cy.layout({ name: 'circle', radius: mapRadius }).run();
     
-    // 讓地圖自動縮放以完美填滿容器 (Padding 30px) 
+    // ✨ 讓地圖自動縮放以完美填滿容器 (Padding 30px) ✨
     cy.fit(cy.elements(), 30);
 }
 
 loadGraphToCanvas();
 
-// 監聽瀏覽器視窗大小變化，確保地圖隨時保持居中與自適應大小
+// ✨ 監聽瀏覽器視窗大小變化，確保地圖隨時保持居中與自適應大小 ✨
 window.addEventListener('resize', () => {
     cy.fit(cy.elements(), 30);
 });
@@ -138,44 +133,13 @@ function updateMapTheme() {
 
 // 「開始規劃最佳路線」按鈕監聽器
 document.getElementById("btnOptimize").addEventListener("click", () => {
+    const startNode = parseInt(document.getElementById("startNodeSelect").value);
+    const timeLimit = parseInt(document.getElementById("timeLimitInput").value);
+    const moneyLimit = parseInt(document.getElementById("moneyLimitInput").value);
+    const userAge = parseInt(document.getElementById("ageInput").value);
 
-    // 取得輸入值
-    const startNode = document.getElementById("startNodeSelect").value;
-    const timeLimit = document.getElementById("timeLimitInput").value;
-    const moneyLimit = document.getElementById("moneyLimitInput").value;
-    const userAge = document.getElementById("ageInput").value;
-
-    // 新增欄位是否為空的防呆檢查（避免用鍵盤倒退鍵刪光數字）
-    if (timeLimit === "" || moneyLimit === "" || userAge === "") {
-        alert("請輸入完整的限制條件！");
-        return; // 阻擋程式繼續往下執行
-    }
-
-    // 轉成數字進行範圍計算
-    const startNodeNum = parseInt(startNode);
-    const timeLimitNum = parseInt(timeLimit);
-    const moneyLimitNum = parseInt(moneyLimit);
-    const userAgeNum = parseInt(userAge);
-
-    // 新增範圍判斷（針對鍵盤隨意輸入的行為）
-    if (timeLimitNum < 1) {
-        alert("錯誤：時間限制不能小於 1 分鐘！");
-        return; // 阻擋
-    }
-
-    if (moneyLimitNum < 0) {
-        alert("錯誤：預算限制不能小於 0 元！");
-        return; // 阻擋
-    }
-
-    if (userAgeNum < 0) {
-        alert("錯誤：遊客年齡不能小於 0 歲！");
-        return; // 阻擋
-    }
-
-    // 傳入轉換後的數字變數
-    const dfsResult = findBestRoute(startNodeNum, timeLimitNum, moneyLimitNum, userAgeNum);
-    const greedyResult = findGreedyRoute(startNodeNum, timeLimitNum, moneyLimitNum, userAgeNum);
+    const dfsResult = findBestRoute(startNode, timeLimit, moneyLimit, userAge);
+    const greedyResult = findGreedyRoute(startNode, timeLimit, moneyLimit, userAge);
 
     renderDataAndTimeline(dfsResult, greedyResult);
 });
